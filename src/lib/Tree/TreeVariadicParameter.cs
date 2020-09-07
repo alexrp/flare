@@ -1,17 +1,17 @@
-using Flare.Metadata;
-
 namespace Flare.Tree
 {
     sealed class TreeVariadicParameter : TreeVariable
     {
-        public Parameter Parameter { get; }
+        public override string Name { get; }
 
-        public new string Name => base.Name!;
-
-        public TreeVariadicParameter(Parameter parameter)
-            : base(TreeType.Array, parameter.Name, false)
+        public TreeVariadicParameter(string name)
         {
-            Parameter = parameter;
+            Name = name;
+        }
+
+        public override string ToString()
+        {
+            return $"@{Name}";
         }
     }
 }

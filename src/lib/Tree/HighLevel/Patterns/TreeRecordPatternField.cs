@@ -1,3 +1,5 @@
+using System.CodeDom.Compiler;
+
 namespace Flare.Tree.HighLevel.Patterns
 {
     sealed class TreeRecordPatternField
@@ -10,6 +12,12 @@ namespace Flare.Tree.HighLevel.Patterns
         {
             Name = name;
             Pattern = pattern;
+        }
+
+        public void ToString(IndentedTextWriter writer)
+        {
+            writer.Write("{0} = ", Name);
+            Pattern.ToString(writer);
         }
     }
 }

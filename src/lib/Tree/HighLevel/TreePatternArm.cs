@@ -1,3 +1,4 @@
+using System.CodeDom.Compiler;
 using Flare.Tree.HighLevel.Patterns;
 
 namespace Flare.Tree.HighLevel
@@ -15,6 +16,21 @@ namespace Flare.Tree.HighLevel
             Pattern = pattern;
             Guard = guard;
             Body = body;
+        }
+
+        public void ToString(IndentedTextWriter writer)
+        {
+            Pattern.ToString(writer);
+
+            if (Guard is TreeReference guard)
+            {
+                writer.Write(" if ");
+                guard.ToString(writer);
+            }
+
+            writer.Write(" => ");
+            Body.ToString(writer);
+            writer.Write(";");
         }
     }
 }

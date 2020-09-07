@@ -18,6 +18,26 @@ namespace Flare.Metadata
         protected ModuleLoader(ModuleLoaderMode mode)
         {
             Mode = mode.Check(nameof(mode));
+
+            var context = new SyntaxContext();
+
+            void LoadCore(params string[] components)
+            {
+                _ = LoadModule(new ModulePath(new[] { ModulePath.CoreModuleName }.Concat(components)
+                    .ToImmutableArray()), context);
+            }
+
+            // Load core modules immediately as they are needed for lowering and code generation.
+
+            LoadCore();
+            LoadCore("Agent");
+            LoadCore("Array");
+            LoadCore("GC");
+            LoadCore("IO");
+            LoadCore("Map");
+            LoadCore("Set");
+            LoadCore("String");
+            LoadCore("Time");
         }
 
         public Module? GetModule(ModulePath path)

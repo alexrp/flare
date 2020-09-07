@@ -1,3 +1,5 @@
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using Flare.Syntax;
 
 namespace Flare.Tree.HighLevel
@@ -10,60 +12,6 @@ namespace Flare.Tree.HighLevel
 
         public TreeReference Right { get; }
 
-        public override TreeType Type
-        {
-            get
-            {
-                var type = Left.Value.Type;
-
-                switch (Operator)
-                {
-                    case "%":
-                    case "*":
-                    case "+":
-                    case "-":
-                    case "/":
-                        switch (type)
-                        {
-                            case TreeType.Integer:
-                            case TreeType.Real:
-                                return type;
-                        }
-
-                        break;
-                    case "&":
-                    case "^":
-                    case "|":
-                        switch (type)
-                        {
-                            case TreeType.Boolean:
-                            case TreeType.Integer:
-                                return type;
-                        }
-
-                        break;
-                    case "<<":
-                    case ">>":
-                        if (type == TreeType.Integer)
-                            return type;
-
-                        break;
-                    case "~":
-                        switch (type)
-                        {
-                            case TreeType.String:
-                            case TreeType.Tuple:
-                            case TreeType.Array:
-                                return type;
-                        }
-
-                        break;
-                }
-
-                return TreeType.Any;
-            }
-        }
-
         public TreeBinaryNode(TreeContext context, SourceLocation location, TreeReference left, string @operator,
             TreeReference right)
             : base(context, location)
@@ -71,6 +19,26 @@ namespace Flare.Tree.HighLevel
             Left = left;
             Operator = @operator;
             Right = right;
+        }
+
+        public override IEnumerable<TreeReference> Children()
+        {
+            yield return Left;
+            yield return Right;
+        }
+
+        public override T Accept<T>(TreeVisitor<T> visitor, T state)
+        {
+            return visitor.Visit(this, state);
+        }
+
+        public override void ToString(IndentedTextWriter writer)
+        {
+            writer.Write("(");
+            Left.ToString(writer);
+            writer.Write(" {0} ", Operator);
+            Right.ToString(writer);
+            writer.Write(")");
         }
     }
 }

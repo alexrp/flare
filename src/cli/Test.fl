@@ -1,0 +1,9 @@
+mod Test;
+
+fn main(a, b, c) {
+    cond {
+        a == b => "case 1";
+        c => "case 2";
+        true => "case 3";
+    };
+}

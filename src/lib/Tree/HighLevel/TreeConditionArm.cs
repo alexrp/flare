@@ -1,3 +1,5 @@
+using System.CodeDom.Compiler;
+
 namespace Flare.Tree.HighLevel
 {
     sealed class TreeConditionArm
@@ -10,6 +12,14 @@ namespace Flare.Tree.HighLevel
         {
             Condition = condition;
             Body = body;
+        }
+
+        public void ToString(IndentedTextWriter writer)
+        {
+            Condition.ToString(writer);
+            writer.Write(" => ");
+            Body.ToString(writer);
+            writer.Write(";");
         }
     }
 }

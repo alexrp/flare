@@ -44,7 +44,12 @@ namespace Flare.Cli.Commands
 
             try
             {
-                _ = loader.LoadModule(text, context);
+                var mod = loader.LoadModule(text, context);
+
+                foreach (var decl in mod.Declarations.OfType<Function>())
+                {
+                    decl.Test();
+                }
             }
             catch (ModuleLoadException)
             {

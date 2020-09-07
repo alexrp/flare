@@ -1,3 +1,5 @@
+using System.CodeDom.Compiler;
+
 namespace Flare.Tree.HighLevel.Patterns
 {
     sealed class TreeMapPatternPair
@@ -10,6 +12,13 @@ namespace Flare.Tree.HighLevel.Patterns
         {
             Key = key;
             Value = value;
+        }
+
+        public void ToString(IndentedTextWriter writer)
+        {
+            Key.ToString(writer);
+            writer.Write(" : ");
+            Value.ToString(writer);
         }
     }
 }

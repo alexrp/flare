@@ -1,3 +1,6 @@
+using System.CodeDom.Compiler;
+using Flare.Syntax;
+
 namespace Flare.Tree.HighLevel.Patterns
 {
     abstract class TreePattern
@@ -8,5 +11,9 @@ namespace Flare.Tree.HighLevel.Patterns
         {
             Alias = alias;
         }
+
+        public abstract TreeReference Compile(TreeContext context, SourceLocation location, TreeLocal operand);
+
+        public abstract void ToString(IndentedTextWriter writer);
     }
 }

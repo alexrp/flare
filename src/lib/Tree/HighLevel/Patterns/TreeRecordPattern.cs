@@ -1,4 +1,6 @@
+using System.CodeDom.Compiler;
 using System.Collections.Immutable;
+using Flare.Syntax;
 
 namespace Flare.Tree.HighLevel.Patterns
 {
@@ -13,6 +15,38 @@ namespace Flare.Tree.HighLevel.Patterns
         {
             Name = name;
             Fields = fields;
+        }
+
+        public override TreeReference Compile(TreeContext context, SourceLocation location, TreeLocal operand)
+        {
+            throw new System.NotImplementedException(); // TODO
+        }
+
+        public override void ToString(IndentedTextWriter writer)
+        {
+            writer.Write("rec ");
+
+            if (Name != null)
+                writer.Write("{0} ", Name);
+
+            writer.Write("{ ");
+
+            var first = true;
+
+            foreach (var field in Fields)
+            {
+                if (!first)
+                    writer.Write(", ");
+
+                field.ToString(writer);
+
+                first = false;
+            }
+
+            writer.Write("}");
+
+            if (Alias != null)
+                writer.Write(" as {0}", Alias);
         }
     }
 }

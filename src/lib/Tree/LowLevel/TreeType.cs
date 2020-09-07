@@ -1,8 +1,7 @@
-namespace Flare.Tree
+namespace Flare.Tree.LowLevel
 {
     enum TreeType
     {
-        Any,
         Nil,
         Boolean,
         Atom,
@@ -17,5 +16,9 @@ namespace Flare.Tree
         Array,
         Set,
         Map,
+        Agent,
+        Reference,
+        Pointer,
+        Handle,
     }
 }

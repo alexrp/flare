@@ -2,9 +2,22 @@ namespace Flare.Tree
 {
     sealed class TreeLocal : TreeVariable
     {
-        public TreeLocal(TreeType type, string? name, bool mutable)
-            : base(type, name, mutable)
+        public int Id { get; }
+
+        public override string? Name { get; }
+
+        public bool IsChecked { get; }
+
+        public TreeLocal(int id, string? name, bool @checked)
         {
+            Id = id;
+            Name = name;
+            IsChecked = @checked;
+        }
+
+        public override string ToString()
+        {
+            return $"${Id}";
         }
     }
 }

@@ -25,6 +25,10 @@ namespace Flare.Metadata
             IsPublic = node.VisibilityKeywordToken?.Kind == SyntaxTokenKind.PubKeyword;
         }
 
+        internal virtual void Lower()
+        {
+        }
+
         public override string ToString()
         {
             return $"{Module}.{Name}";

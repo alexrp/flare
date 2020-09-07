@@ -1,3 +1,5 @@
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using Flare.Syntax;
 
 namespace Flare.Tree.HighLevel
@@ -10,31 +12,6 @@ namespace Flare.Tree.HighLevel
 
         public TreeReference Right { get; }
 
-        public override TreeType Type
-        {
-            get
-            {
-                switch (Left.Value.Type)
-                {
-                    case TreeType.Nil:
-                    case TreeType.Boolean:
-                    case TreeType.Atom:
-                    case TreeType.Integer:
-                    case TreeType.Real:
-                    case TreeType.String:
-                    case TreeType.Module:
-                    case TreeType.Function:
-                    case TreeType.Tuple:
-                    case TreeType.Array:
-                    case TreeType.Set:
-                    case TreeType.Map:
-                        return TreeType.Boolean;
-                    default:
-                        return TreeType.Any;
-                }
-            }
-        }
-
         public TreeRelationalNode(TreeContext context, SourceLocation location, TreeReference left,
             TreeRelationalOperator @operator, TreeReference right)
             : base(context, location)
@@ -42,6 +19,37 @@ namespace Flare.Tree.HighLevel
             Left = left;
             Operator = @operator;
             Right = right;
+        }
+
+        public override IEnumerable<TreeReference> Children()
+        {
+            yield return Left;
+            yield return Right;
+        }
+
+        public override T Accept<T>(TreeVisitor<T> visitor, T state)
+        {
+            return visitor.Visit(this, state);
+        }
+
+        public override void ToString(IndentedTextWriter writer)
+        {
+            writer.Write("(");
+            Left.ToString(writer);
+
+            writer.Write(" {0} ", Operator switch
+            {
+                TreeRelationalOperator.Equal => "==",
+                TreeRelationalOperator.NotEqual => "!=",
+                TreeRelationalOperator.LessThan => "<",
+                TreeRelationalOperator.LessThanOrEqual => "<=",
+                TreeRelationalOperator.GreaterThan => ">",
+                TreeRelationalOperator.GreaterThanOrEqual => ">=",
+                _ => throw DebugAssert.Unreachable(),
+            });
+
+            Right.ToString(writer);
+            writer.Write(")");
         }
     }
 }

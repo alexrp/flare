@@ -1,3 +1,5 @@
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using Flare.Syntax;
 
 namespace Flare.Tree.HighLevel
@@ -8,8 +10,6 @@ namespace Flare.Tree.HighLevel
 
         public TreeReference Right { get; }
 
-        public override TreeType Type => TreeType.Boolean;
-
         public TreeLogicalOrNode(TreeContext context, SourceLocation location, TreeReference left, TreeReference right)
             : base(context, location)
         {
@@ -17,14 +17,32 @@ namespace Flare.Tree.HighLevel
             Right = right;
         }
 
-        public override TreeReference Reduce()
+        public override IEnumerable<TreeReference> Children()
         {
-            // Rewrite a || b to !(!a && !b).
+            yield return Left;
+            yield return Right;
+        }
+
+        public override T Accept<T>(TreeVisitor<T> visitor, T state)
+        {
+            return visitor.Visit(this, state);
+        }
+
+        public override TreeNode Rewrite()
+        {
+            // Rewrite `lhs or rhs` to `!(!lhs and !rhs)`, i.e. we implement `or` in terms of `and`.
 
             return new TreeLogicalNotNode(Context, Location,
-                new TreeLogicalAndNode(Context, Location.WithMissing(),
-                    new TreeLogicalNotNode(Context, Location.WithMissing(), Left),
-                    new TreeLogicalNotNode(Context, Location.WithMissing(), Right)));
+                new TreeLogicalAndNode(Context, Location,
+                    new TreeLogicalNotNode(Context, Location, Left),
+                    new TreeLogicalNotNode(Context, Location, Right)));
+        }
+
+        public override void ToString(IndentedTextWriter writer)
+        {
+            Left.ToString(writer);
+            writer.Write(" or ");
+            Right.ToString(writer);
         }
     }
 }

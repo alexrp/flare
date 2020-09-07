@@ -1,4 +1,7 @@
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using Flare.Syntax;
+using Flare.Tree.LowLevel;
 
 namespace Flare.Tree.HighLevel
 {
@@ -8,8 +11,6 @@ namespace Flare.Tree.HighLevel
 
         public TreeReference Right { get; }
 
-        public override TreeType Type => TreeType.Boolean;
-
         public TreeLogicalAndNode(TreeContext context, SourceLocation location, TreeReference left, TreeReference right)
             : base(context, location)
         {
@@ -17,15 +18,40 @@ namespace Flare.Tree.HighLevel
             Right = right;
         }
 
-        public override TreeReference Reduce()
+        public override IEnumerable<TreeReference> Children()
         {
-            // Rewrite a && b to if (!a) { false; } else { !!b; }.
+            yield return Left;
+            yield return Right;
+        }
+
+        public override T Accept<T>(TreeVisitor<T> visitor, T state)
+        {
+            return visitor.Visit(this, state);
+        }
+
+        public override TreeNode Rewrite()
+        {
+            // Rewrite `lhs and rhs` to:
+            //
+            // ```
+            // if (!lhs) {
+            //     false;
+            // } else {
+            //     test rhs;
+            // }
+            // ```
 
             return new TreeIfNode(Context, Location,
-                new TreeLogicalNotNode(Context, Location.WithMissing(), Left),
-                new TreeLiteralNode(Context, Location.WithMissing(), false),
-                new TreeLogicalNotNode(Context, Location.WithMissing(),
-                    new TreeLogicalNotNode(Context, Location.WithMissing(), Right)));
+                new TreeLogicalNotNode(Context, Location, Left),
+                new TreeLiteralNode(Context, Location, false),
+                new TreeTestNode(Context, Location, Right));
+        }
+
+        public override void ToString(IndentedTextWriter writer)
+        {
+            Left.ToString(writer);
+            writer.Write(" and ");
+            Right.ToString(writer);
         }
     }
 }
